@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#f6f3ed">
+  <title>Tentang Kita | Persediaan Bahan Baku</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="./index.html" aria-label="Tentang Kita - Beranda">
+      <span class="brand-mark">TK</span>
+      <span><strong>Tentang Kita</strong><small>Sistem Pembelian & Persediaan</small></span>
+    </a>
+    <button class="menu-toggle" id="menu-toggle" type="button" aria-label="Buka menu" aria-expanded="false">☰</button>
+    <div class="topbar-meta">
+      <span class="today"><span class="topbar-icon">▦</span><span id="today"></span></span>
+      <span class="topbar-divider"></span>
+      <span class="admin-badge">A</span>
+      <span class="admin-name">Admin</span>
+      <span class="admin-chevron">⌄</span>
+    </div>
+  </header>
+
+  <div class="app-layout">
+    <aside class="sidebar" id="sidebar">
+      <p class="sidebar-caption">MENU UTAMA</p>
+      <nav class="side-nav" aria-label="Navigasi utama">
+        <button class="nav-item active" type="button" data-view="overview" aria-current="page"><span class="nav-icon">⌂</span>Ringkasan</button>
+        <button class="nav-item" type="button" data-view="inventory"><span class="nav-icon">▦</span>Daftar persediaan</button>
+        <button class="nav-item" type="button" data-view="suppliers"><span class="nav-icon">♧</span>Data pemasok</button>
+        <button class="nav-item" type="button" data-view="transactions"><span class="nav-icon">↔</span>Transaksi</button>
+      </nav>
+      <div class="sidebar-bottom">
+        <span class="sidebar-dot"></span>
+        <span><strong>Tentang Kita</strong><small>Manajemen cafe</small></span>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <section class="welcome">
+        <div>
+          <p class="eyebrow" id="page-eyebrow">OPERASIONAL CAFE</p>
+          <h1 id="page-title">Ringkasan persediaan</h1>
+          <p class="muted" id="page-description">Pantau kondisi stok dan aktivitas bahan baku cafe.</p>
+        </div>
+        <button class="button button-primary" id="refresh-button" type="button">Muat ulang data</button>
+      </section>
+
+      <div class="notice" id="notice" role="status" aria-live="polite" hidden></div>
+
+      <section class="summary-grid" aria-label="Statistik cafe">
+        <article class="summary-card">
+          <span class="summary-icon">▦</span>
+          <div><span class="summary-label">Bahan Terdaftar</span><strong id="material-count">—</strong><span class="summary-foot">jenis bahan baku</span></div>
+        </article>
+        <article class="summary-card">
+          <span class="summary-icon">▤</span>
+          <div><span class="summary-label">Transaksi Hari Ini</span><strong id="today-transaction-count">—</strong><span class="summary-foot">transaksi tercatat</span></div>
+        </article>
+        <article class="summary-card">
+          <span class="summary-icon">Rp</span>
+          <div><span class="summary-label">Pembelian Hari Ini</span><strong id="today-purchase-value">—</strong><span class="summary-foot">nilai pembelian tercatat</span></div>
+        </article>
+      </section>
+
+      <section class="view-panel" id="view-overview">
+        <section class="overview-inventory panel">
+          <div class="section-heading"><div><p class="eyebrow">KONDISI STOK</p><h2>Ringkasan persediaan</h2></div><button class="text-button" type="button" data-open-view="inventory">Lihat persediaan →</button></div>
+          <div class="overview-stats">
+            <div><span>Nilai persediaan</span><strong id="inventory-value">—</strong></div>
+            <div><span>Stok perlu diperhatikan</span><strong id="low-stock-count">—</strong></div>
+          </div>
+        </section>
+        <section class="panel">
+          <div class="section-heading">
+            <div><p class="eyebrow">AKTIVITAS TERBARU</p><h2>Transaksi terakhir</h2></div>
+            <button class="text-button" type="button" data-open-view="transactions">Lihat semua transaksi →</button>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Tanggal</th><th>Transaksi</th><th>Bahan</th><th>Jumlah</th><th>Nilai</th></tr></thead>
+              <tbody id="recent-transaction-rows"><tr><td colspan="5" class="empty-cell">Memuat transaksi...</td></tr></tbody>
+            </table>
+          </div>
+        </section>
+        <footer>Setiap pemakaian dinilai menggunakan biaya rata-rata berjalan pada saat transaksi dicatat.</footer>
+      </section>
+
+      <section class="view-panel" id="view-inventory" hidden>
+        <section class="panel">
+          <div class="section-heading">
+            <div><p class="eyebrow">KATALOG BAHAN</p><h2>Daftar persediaan</h2></div>
+            <button class="button button-secondary" id="show-material-form" type="button">+ Tambah bahan</button>
+          </div>
+          <form id="material-form" class="inline-form" hidden>
+            <label>Nama bahan<input name="nama" required maxlength="100" placeholder="Contoh: Susu UHT"></label>
+            <label>Satuan<input name="satuan" required maxlength="30" placeholder="Contoh: liter"></label>
+            <label>Stok minimum<input name="stok_minimum" type="number" min="0" step="0.001" value="0" required></label>
+            <button class="button button-primary" type="submit">Simpan bahan</button>
+          </form>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Bahan baku</th><th>Stok tersedia</th><th>Minimum</th><th>Biaya rata-rata</th><th>Nilai persediaan</th><th>Status</th></tr></thead>
+              <tbody id="inventory-rows"><tr><td colspan="6" class="empty-cell">Memuat persediaan...</td></tr></tbody>
+            </table>
+          </div>
+        </section>
+      </section>
+
+      <section class="view-panel" id="view-suppliers" hidden>
+        <section class="panel">
+          <div class="section-heading">
+            <div><p class="eyebrow">MITRA PENGADAAN</p><h2>Data pemasok</h2></div>
+            <button class="button button-secondary" id="show-supplier-form" type="button">+ Tambah pemasok</button>
+          </div>
+          <form id="supplier-form" class="supplier-form" hidden>
+            <label>Nama pemasok<input name="nama" required maxlength="120" placeholder="Nama pemasok"></label>
+            <label>Kontak (opsional)<input name="kontak" maxlength="120" placeholder="Telepon atau email"></label>
+            <button class="button button-primary" type="submit">Simpan pemasok</button>
+          </form>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Nama pemasok</th><th>Kontak</th></tr></thead>
+              <tbody id="supplier-rows"><tr><td colspan="2" class="empty-cell">Memuat pemasok...</td></tr></tbody>
+            </table>
+          </div>
+        </section>
+      </section>
+
+      <section class="view-panel" id="view-transactions" hidden>
+        <div class="transaction-layout">
+          <section class="panel transaction-form-panel">
+            <div class="section-heading transaction-title-row">
+              <div><h2 id="movement-title">Buat Transaksi Pembelian</h2><p class="muted">Isi detail transaksi dengan lengkap dan benar.</p></div>
+              <div class="date-chip"><span class="summary-icon">▦</span><span><small>Tanggal transaksi</small><strong id="transaction-date"></strong></span></div>
+            </div>
+            <form id="movement-form">
+              <div class="form-section">
+                <h3><span class="step-number">1</span>Data Transaksi</h3>
+                <div class="form-grid">
+                  <label>Jenis transaksi
+                    <select name="jenis" required>
+                      <option value="pembelian">↔　Pembelian / stok masuk</option>
+                      <option value="pemakaian">↔　Pemakaian / stok keluar</option>
+                    </select>
+                  </label>
+                  <label>Bahan baku<select name="bahan_baku_id" id="movement-material" required></select></label>
+                  <label>Jumlah<input name="jumlah" type="number" min="0.001" step="0.001" required placeholder="0"></label>
+                  <label id="cost-field">Harga beli per satuan<input name="harga_satuan" type="number" min="0.01" step="0.01" placeholder="0"></label>
+                </div>
+              </div>
+              <div class="form-section" id="supplier-section">
+                <h3><span class="step-number">2</span>Pemasok <span class="optional-label">(opsional)</span></h3>
+                <label><select name="pemasok_id" id="movement-supplier"></select></label>
+              </div>
+              <div class="form-section">
+                <h3><span class="step-number">3</span>Catatan</h3>
+                <label class="notes-field"><textarea name="catatan" maxlength="500" placeholder="Catatan tambahan (opsional)"></textarea><span class="character-count" id="note-count">0/500</span></label>
+              </div>
+              <div class="form-actions transaction-actions">
+                <button class="button button-outline" id="reset-movement" type="reset">↻　Reset</button>
+                <button class="button button-primary save-button" type="submit">▣　Simpan transaksi　→</button>
+              </div>
+            </form>
+          </section>
+          <aside class="panel transaction-summary">
+            <div class="summary-aside-heading"><span class="summary-icon">▤</span><div><h2>Ringkasan Transaksi</h2><p>Periksa kembali data sebelum menyimpan.</p></div></div>
+            <dl class="summary-list">
+              <div><dt>↔　Jenis transaksi</dt><dd id="summary-type">Pembelian / stok masuk</dd></div>
+              <div><dt>♧　Bahan baku</dt><dd id="summary-material">-</dd></div>
+              <div><dt>＃　Jumlah</dt><dd id="summary-quantity">-</dd></div>
+              <div><dt>◇　Harga beli per satuan</dt><dd id="summary-cost">-</dd></div>
+              <div class="summary-total"><dt>＄　Total nilai</dt><dd id="summary-total">-</dd></div>
+              <div><dt>♙　Pemasok</dt><dd id="summary-supplier">-</dd></div>
+              <div><dt>▤　Catatan</dt><dd id="summary-note">-</dd></div>
+            </dl>
+            <div class="summary-tip"><strong>ⓘ　Setelah disimpan</strong><span>Data akan otomatis masuk ke daftar transaksi dan memperbarui stok persediaan.</span></div>
+          </aside>
+        </div>
+        <section class="panel transaction-history">
+          <div class="section-heading"><div><p class="eyebrow">BUKU PERSEDIAAN</p><h2>Riwayat transaksi</h2></div></div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Tanggal</th><th>Transaksi</th><th>Bahan</th><th>Jumlah</th><th>Nilai</th></tr></thead>
+              <tbody id="transaction-rows"><tr><td colspan="5" class="empty-cell">Memuat transaksi...</td></tr></tbody>
+            </table>
+          </div>
+        </section>
+      </section>
+    </main>
+  </div>
+  <script src="./app.js" defer></script>
+</body>
+</html>
